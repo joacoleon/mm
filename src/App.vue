@@ -18,7 +18,7 @@
             <v-tooltip text="Si son 11, se seleccionan 10 al azar. Si son mas de 12, se seleccionan 12 al azar."
               location="bottom">
               <template v-slot:activator="{ props }">
-                <v-btn class="ma-2" variant="outlined" color="orange-accent-3" v-bind="props" :disabled="haveToPlay || playersWerePickedNormally || playersWerePicked"
+                <v-btn class="ma-2" variant="outlined" color="orange-accent-3" v-bind="props" :disabled="haveToPlay || playersWerePickedNormally || playersWerePicked || notEnoughPlayers"
                   @click="loadRandom()">Cargar 10-12</v-btn>
               </template>
             </v-tooltip>
@@ -27,7 +27,7 @@
             <v-tooltip text="1. Usar cuando hay jugadores que tienen que jugar si o si." location="bottom">
               <template v-slot:activator="{ props }">
                 <v-btn class="ma-2" variant="outlined" color="red-accent-3" v-bind="props"
-                  :disabled="playersWerePickedNormally || playersWerePicked" @click="loadHaveToPlay()">
+                  :disabled="notEnoughHaveToPlayPlayers || playersWerePickedNormally || playersWerePicked" @click="loadHaveToPlay()">
                   1. No jugaron
                 </v-btn>
               </template>
@@ -35,7 +35,7 @@
             <v-tooltip text="2. Usar luego de haber seleccionado los que tienen que jugar si o si." location="bottom">
               <template v-slot:activator="{ props }">
                 <v-btn class="ma-2" variant="outlined" color="red-accent-3" v-bind="props"
-                  :disabled="playersWerePickedNormally || playersWerePicked" @click="loadRest()">
+                  :disabled="!haveToPlay || notEnoughRestPlayers || playersWerePickedNormally || playersWerePicked" @click="loadRest()">
                   2. Cargar resto
                 </v-btn>
               </template>
@@ -85,38 +85,40 @@
 
         <v-row v-if="teamsWereSorted" class="mt-4">
           <v-col>
-            <v-card variant="tonal" class="pa-3 pt-4 text-center bg-indigo">
+            <v-card variant="tonal" class="pa-3 py-4 text-center bg-indigo">
               <v-badge :content="sumA" floating color="indigo-lighten-3">
-                <span justify="center" class="display-1 font-weight-bold">CT</span>
+                <span class="display-1 font-weight-bold">CT</span>
               </v-badge>
-              <v-row>
-                <v-col v-for="(i, index) in teamA" :key="index">
+              <v-row justify="center" :class="mobile ? 'mt-5' : 'mt-3'">
+                <v-col v-for="(i, index) in teamA" :key="index" md="auto" cols="12" :class="mobile ? 'pa-1' : ''">
                   <span class="my-2 font-weight-bold">{{ i.id }}</span>
                 </v-col>
               </v-row>
             </v-card>
           </v-col>
           <v-col>
-            <v-card variant="tonal" class="pa-3 pt-4 text-center bg-red">
+            <v-card variant="tonal" class="pa-3 py-4 text-center bg-red">
               <v-badge :content="sumA" floating color="red-lighten-3">
-                <span justify="center" class="display-1 font-weight-bold">TT</span>
+                <span class="display-1 font-weight-bold">TT</span>
               </v-badge>
-              <v-row>
-                <v-col v-for="(i, index) in teamB" :key="index">
+              <v-row justify="center" :class="mobile ? 'mt-5' : 'mt-3'">
+                <v-col v-for="(i, index) in teamB" :key="index" md="auto" cols="12" :class="mobile ? 'pa-1' : ''">
                   <span class="my-2 font-weight-bold">{{ i.id }}</span>
                 </v-col>
               </v-row>
             </v-card>
           </v-col>
         </v-row>
-
       </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useDisplay } from 'vuetify';
+
+const { mobile } = useDisplay();
 
 let sourcePlayers = ref([
   { id: "1M", level: 8, checked: false, audioId: null },
@@ -127,8 +129,8 @@ let sourcePlayers = ref([
   { id: "brusLEE", level: 10, checked: false, audioId: null },
   { id: "El Chad", level: 5, checked: false, audioId: null },
   { id: "Equi", level: 6, checked: false, audioId: null },
+  { id: "exe", level: 6, checked: false, audioId: null },
   { id: "FILI", level: 7, checked: false, audioId: null },
-  { id: "Ficha", level: 7, checked: false, audioId: null },
   { id: "Fisi", level: 5, checked: false, audioId: null },
   { id: "FR1D4", level: 5, checked: false, audioId: null },
   { id: "jp", level: 4, checked: false, audioId: null },
@@ -294,6 +296,18 @@ const copyToClipboard = () => {
   document.execCommand("copy");
   document.body.removeChild(text);
 }
+
+const notEnoughPlayers = computed (() => {
+  return sourcePlayers.value.filter(x => x.checked).length < 10 || sourcePlayers.value.filter(x => x.checked).length == 11;
+})
+
+const notEnoughHaveToPlayPlayers = computed (() => {
+  return sourcePlayers.value.filter(x => x.checked).length < 1;
+})
+
+const notEnoughRestPlayers = computed (() => {
+  return (sourcePlayers.value.filter(x => x.checked).length + haveToPlayPlayers.value.length) < 10 || (sourcePlayers.value.filter(x => x.checked).length + haveToPlayPlayers.value.length) == 11;
+})
 
 </script>
 <style scoped>

@@ -2,7 +2,7 @@
   <v-app>
     <v-main>
       <v-container>
-        <p class="text-h2 text-center">Mixito Maker</p>
+        <p class="text-h2 text-center">Team Maker</p>
         <v-row class="mt-5" justify="center">
           <v-col v-for="(p, index) in sourcePlayers" :key="index" cols="auto">
             <v-card class="player-card text-center mx-1 mb-3 px-5 py-1"
@@ -64,9 +64,9 @@
           </v-col>
         </v-row>
 
-        <div v-if="mimirPlayers.length" class="text-button mt-6 mb-1 text-center text-red">SPECT:</div>
+        <div v-if="leftOutPlayers.length" class="text-button mt-6 mb-1 text-center text-red">SPECT:</div>
         <v-row justify="center">
-          <v-col v-for="(m, index) in mimirPlayers" :key="index" cols="auto">
+          <v-col v-for="(m, index) in leftOutPlayers" :key="index" cols="auto">
             <v-card class="text-center px-5 bg-red">
               <b>{{ m.id }}</b>
             </v-card>
@@ -121,34 +121,34 @@ import { useDisplay } from 'vuetify';
 const { mobile } = useDisplay();
 
 let sourcePlayers = ref([
-  { id: "1M", level: 8, checked: false, audioId: null },
-  { id: "Abusa", level: 7, checked: false, audioId: null },
-  { id: "AFIP", level: 8, checked: false, audioId: null },
-  { id: "Bichi", level: 6, checked: false, audioId: null },
-  { id: "Bot", level: 7, checked: false, audioId: null },
-  { id: "brusLEE", level: 10, checked: false, audioId: null },
-  { id: "El Chad", level: 5, checked: false, audioId: null },
-  { id: "Equi", level: 6, checked: false, audioId: null },
-  { id: "exe", level: 6, checked: false, audioId: null },
-  { id: "FILI", level: 7, checked: false, audioId: null },
-  { id: "Fisi", level: 5, checked: false, audioId: null },
-  { id: "FR1D4", level: 5, checked: false, audioId: null },
-  { id: "jp", level: 4, checked: false, audioId: null },
-  { id: "Legi", level: 7, checked: false, audioId: null },
-  { id: "Leo", level: 8, checked: false, audioId: null },
-  { id: "Nawi", level: 10, checked: false, audioId: null },
-  { id: "Pela", level: 9, checked: false, audioId: null },
-  { id: "pulp0", level: 4, checked: false, audioId: null },
-  { id: "Rou", level: 4, checked: false, audioId: null },
-  { id: "Rules", level: 6, checked: false, audioId: null },
-  { id: "Sakura", level: 5, checked: false, audioId: null },
-  { id: "Samarosky", level: 5, checked: false, audioId: null },
-  { id: "vazko", level: 10, checked: false, audioId: null },
-  { id: "zocho", level: 10, checked: false, audioId: null }
+  { id: "1M", level: 8, checked: false },
+  { id: "Ab", level: 7, checked: false },
+  { id: "AFIP", level: 8, checked: false },
+  { id: "Bichi", level: 6, checked: false },
+  { id: "Bot", level: 7, checked: false },
+  { id: "brusLEE", level: 10, checked: false },
+  { id: "El Chad", level: 5, checked: false },
+  { id: "Equi", level: 6, checked: false },
+  { id: "exe", level: 6, checked: false },
+  { id: "FILI", level: 7, checked: false },
+  { id: "Fisi", level: 5, checked: false },
+  { id: "FR1D4", level: 5, checked: false },
+  { id: "jp", level: 4, checked: false },
+  { id: "Legi", level: 7, checked: false },
+  { id: "Leo", level: 8, checked: false },
+  { id: "Nawi", level: 10, checked: false },
+  { id: "Pela", level: 9, checked: false },
+  { id: "pulp0", level: 4, checked: false },
+  { id: "Rou", level: 4, checked: false },
+  { id: "Rules", level: 6, checked: false },
+  { id: "Sakura", level: 5, checked: false },
+  { id: "Samarosky", level: 5, checked: false },
+  { id: "vz", level: 10, checked: false },
+  { id: "zocho", level: 10, checked: false }
 ]);
 
 const onlinePlayers = ref([]);
-const mimirPlayers = ref([]);
+const leftOutPlayers = ref([]);
 const onlinePlayersDisplay = ref([]);
 
 const haveToPlay = ref(false);
@@ -186,11 +186,11 @@ const loadRandom = () => {
 
   const playerCount = onlinePlayers.value.length;
   if (playerCount === 11) {
-    mimirPlayers.value = onlinePlayers.value.splice(0, playerCount - 10);
+    leftOutPlayers.value = onlinePlayers.value.splice(0, playerCount - 10);
   } else if (playerCount > 12) {
-    mimirPlayers.value = onlinePlayers.value.splice(0, playerCount - 12);
+    leftOutPlayers.value = onlinePlayers.value.splice(0, playerCount - 12);
   } else {
-    mimirPlayers.value = [];
+    leftOutPlayers.value = [];
   }
 
   checkPlayersLevels();
@@ -217,11 +217,11 @@ const loadRest = () => {
   shuffle(onlinePlayers.value);
 
   if (totalPlayers === 11) {
-    mimirPlayers.value = onlinePlayers.value.splice(0, totalPlayers - 10);
+    leftOutPlayers.value = onlinePlayers.value.splice(0, totalPlayers - 10);
   } else if (totalPlayers > 12) {
-    mimirPlayers.value = onlinePlayers.value.splice(0, totalPlayers - 12);
+    leftOutPlayers.value = onlinePlayers.value.splice(0, totalPlayers - 12);
   } else {
-    mimirPlayers.value = [];
+    leftOutPlayers.value = [];
   }
 
   onlinePlayers.value = [...onlinePlayers.value, ...haveToPlayPlayers.value];
@@ -263,13 +263,13 @@ const sortTeams = () => {
   teamsWereSorted.value = true;
 };
 
-const reset = () => {
+/* const reset = () => {
   teamA = [];
   teamB = [];
   onlinePlayersDisplay = [];
   onlinePlayers = [];
   haveToPlayPlayers = [];
-  mimirPlayers = [];
+  leftOutPlayers = [];
   sumA = null;
   sumB = null;
   teamsWereSorted = false;
@@ -278,9 +278,9 @@ const reset = () => {
   haveToPlay = false;
   sourcePlayers.forEach((el) => el.checked = false);
   sourcePlayers.forEach((el) => el.hasToPlay = false);
-}
+} */
 
-const copyToClipboard = () => {
+/* const copyToClipboard = () => {
   var text = document.createElement("textarea");
   document.body.appendChild(text);
   let teamAText = [];
@@ -295,7 +295,7 @@ const copyToClipboard = () => {
   text.select();
   document.execCommand("copy");
   document.body.removeChild(text);
-}
+} */
 
 const notEnoughPlayers = computed (() => {
   return sourcePlayers.value.filter(x => x.checked).length < 10 || sourcePlayers.value.filter(x => x.checked).length == 11;
